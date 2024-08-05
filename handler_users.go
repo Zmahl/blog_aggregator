@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Zmahl/blog_aggregator/internal/auth"
 	"github.com/Zmahl/blog_aggregator/internal/database"
 	"github.com/google/uuid"
 )
@@ -29,9 +30,26 @@ func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request)
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
 	})
-	fmt.Println(err)
+
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create user")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, databaseUserToUser(user))
+}
+
+func (cfg *apiConfig) handlerUsersGet(w http.ResponseWriter, r *http.Request) {
+	apiKey, err := auth.GetAPIKey(r.Header)
+	fmt.Println(apiKey)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't find api key")
+		return
+	}
+
+	user, err := cfg.DB.GetUser(r.Context(), apiKey)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Couldn't get user")
 		return
 	}
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -27,7 +26,7 @@ func main() {
 	if dbURL == "" {
 		log.Fatal("DATABASE_URL environment variable not set")
 	}
-	fmt.Println(dbURL)
+
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatal(err)
@@ -41,6 +40,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /v1/users", config.handlerUsersCreate)
+	mux.HandleFunc("GET /v1/users", config.handlerUsersGet)
+
 	mux.HandleFunc("GET /v1/healthz", checkHealth)
 	mux.HandleFunc("GET /v1/err", errorResponse)
 
