@@ -42,6 +42,7 @@ func main() {
 	mux.HandleFunc("POST /v1/users", config.handlerUsersCreate)
 
 	mux.HandleFunc("POST /v1/feeds", config.middlewareAuth(config.handlerCreateFeed))
+	mux.HandleFunc("GET /v1/feeds", config.handlerGetFeeds)
 	mux.HandleFunc("GET /v1/users", config.middlewareAuth(config.handlerUsersGet))
 
 	mux.HandleFunc("GET /v1/healthz", checkHealth)
