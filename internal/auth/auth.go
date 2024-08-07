@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -12,7 +11,6 @@ var ErrNoAuthHeaderIncluded = errors.New("no authorization header included")
 // GetAPIKey
 func GetAPIKey(headers http.Header) (string, error) {
 	authHeader := headers.Get("Authorization")
-	fmt.Println(authHeader)
 	if authHeader == "" {
 		return "", ErrNoAuthHeaderIncluded
 	}
