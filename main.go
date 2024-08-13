@@ -40,13 +40,16 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /v1/users", config.handlerUsersCreate)
-
 	mux.HandleFunc("POST /v1/feeds", config.middlewareAuth(config.handlerCreateFeed))
-	mux.HandleFunc("GET /v1/feeds", config.handlerGetFeeds)
-	mux.HandleFunc("GET /v1/users", config.middlewareAuth(config.handlerUsersGet))
+	mux.HandleFunc("POST /v1/feed_follows", config.middlewareAuth(config.handlerCreateFeedFollow))
 
+	mux.HandleFunc("GET /v1/feeds", config.handlerGetFeeds)
+	mux.HandleFunc("GET /v1/feed_follows", config.middlewareAuth(config.handlerGetFeedFollowsForUser))
+	mux.HandleFunc("GET /v1/users", config.middlewareAuth(config.handlerUsersGet))
 	mux.HandleFunc("GET /v1/healthz", checkHealth)
 	mux.HandleFunc("GET /v1/err", errorResponse)
+
+	mux.HandleFunc("DELETE /v1/feed_follows", config.middlewareAuth(config.handlerDeleteFeedFollow))
 
 	server := http.Server{
 		Addr:    port,
