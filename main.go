@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Zmahl/blog_aggregator/internal/database"
+	"github.com/Zmahl/blog_aggregator/pkg/feedfetcher"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -33,10 +34,16 @@ func main() {
 	}
 
 	dbQueries := database.New(db)
-
 	config := apiConfig{
 		DB: dbQueries,
 	}
+
+	worker := feedfetcher.Worker{
+		Interval:    2,
+		NumberFeeds: 2,
+	}
+
+	go worker.FetchAndUpdateFeeds(dbQueries)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /v1/users", config.handlerUsersCreate)
@@ -56,5 +63,6 @@ func main() {
 		Handler: mux,
 	}
 
+	feedfetcher.FetchDataFromFeed("https://blog.boot.dev/index.xml")
 	server.ListenAndServe()
 }

@@ -7,6 +7,7 @@ CREATE TABLE feeds (
   url TEXT NOT NULL,
   user_id UUID NOT NULL REFERENCES users
                    ON DELETE CASCADE,
+  last_fetched_at TIMESTAMP,
 
   FOREIGN KEY(user_id) REFERENCES users (id)
 );
