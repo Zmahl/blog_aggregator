@@ -3,6 +3,7 @@ package feedfetcher
 import (
 	"encoding/xml"
 	"net/http"
+	"time"
 )
 
 type RSS struct {
@@ -17,9 +18,10 @@ type Channel struct {
 }
 
 type Item struct {
-	Title       string `xml:"title"`
-	Link        string `xml:"link"`
-	Description string `xml:"description"`
+	Title       string    `xml:"title"`
+	Link        string    `xml:"link"`
+	Description string    `xml:"description"`
+	PubDate     time.Time `xml:"pubdate"`
 }
 
 func FetchDataFromFeed(url string) (RSS, error) {

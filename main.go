@@ -55,6 +55,7 @@ func main() {
 	mux.HandleFunc("GET /v1/users", config.middlewareAuth(config.handlerUsersGet))
 	mux.HandleFunc("GET /v1/healthz", checkHealth)
 	mux.HandleFunc("GET /v1/err", errorResponse)
+	mux.HandleFunc("GET /v1/posts", config.middlewareAuth(config.handlerGetPostsByUser))
 
 	mux.HandleFunc("DELETE /v1/feed_follows", config.middlewareAuth(config.handlerDeleteFeedFollow))
 

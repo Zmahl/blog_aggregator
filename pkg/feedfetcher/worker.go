@@ -1,11 +1,13 @@
 package feedfetcher
 
 import (
-	"fmt"
+	"context"
+	"log"
 	"sync"
 	"time"
 
 	"github.com/Zmahl/blog_aggregator/internal/database"
+	"github.com/google/uuid"
 )
 
 type Worker struct {
@@ -25,16 +27,28 @@ func (w *Worker) FetchAndUpdateFeeds(db *database.Queries) {
 		wg := sync.WaitGroup{}
 		for _, feed := range feeds {
 			wg.Add(1)
-			go func(url string) {
+			ctx := context.Background()
+			go func(f database.Feed) {
 				defer wg.Done()
-				rss, err := FetchDataFromFeed(url)
+				rss, err := FetchDataFromFeed(f.Url)
 				if err != nil {
 					return
 				}
 				for _, item := range rss.Channel.Items {
-					fmt.Println(item.Title)
+					_, err := db.CreatePost(ctx, database.CreatePostParams{
+						ID:          uuid.New(),
+						CreatedAt:   time.Now().UTC(),
+						UpdatedAt:   time.Now().UTC(),
+						Title:       item.Title,
+						Description: item.Description,
+						PublishedAt: item.PubDate,
+						FeedID:      f.ID,
+					})
+					if err != nil {
+						log.Println(err.Error())
+					}
 				}
-			}(feed.Url)
+			}(feed)
 		}
 	}
 }
